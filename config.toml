@@ -1,5 +1,5 @@
 # Main agent
-model = "gpt-6"
+model = "gpt-6-astra"
 model_reasoning_effort = "medium"
 
 approvals_reviewer = "auto_review"
