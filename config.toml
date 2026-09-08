@@ -2,6 +2,8 @@
 model = "gpt-6"
 model_reasoning_effort = "medium"
 
+approvals_reviewer = "auto_review"
+
 [agents]
 enabled = true
 
