@@ -1,0 +1,20 @@
+# Credentials and local environment
+/auth.json
+/auth.json.*
+.env
+.env.*
+
+# Codex runtime state
+/history.jsonl
+/sessions/
+/archived_sessions/
+/log/
+/logs/
+/tmp/
+/cache/
+/models_cache.json
+/*.sqlite*
+
+# Installer backups and Python check artifacts
+*.~[0-9]*~
+__pycache__/
