@@ -207,3 +207,139 @@ Before finishing:
 - verify relevant tests/builds
 - consider whether independent review is warranted
 - report unresolved issues clearly
+
+## Avoid Defensive Overengineering
+
+Prefer the simplest implementation that is correct for the actual requirements and operating environment.
+
+Do not add defensive mechanisms for hypothetical situations that are not part of the stated problem, documented system model, or realistic execution path.
+
+In particular, do not add:
+
+* redundant validation of values already guaranteed by trusted callers or established invariants
+* fallback paths for failures that cannot occur under the supported configuration
+* compatibility layers for unsupported or nonexistent versions
+* feature flags for behavior that does not need to coexist
+* migration frameworks when no migration is required
+* wrapper abstractions used only to guard against hypothetical future changes
+* retries without evidence that the operation has a transient failure mode
+* duplicated state solely for verification
+* redundant copies solely for recovery from an unspecified failure
+* extra synchronization for concurrency that cannot occur
+* speculative error handling for impossible states
+* logging, metrics, or bookkeeping that nothing consumes
+
+Do not turn every internal invariant into runtime defensive validation.
+
+If a condition represents a programmer invariant, prefer making the invariant clear in the design and code rather than adding recovery behavior for its violation.
+
+Assertions are appropriate when they document a real invariant and help detect programmer errors. Do not add assertions mechanically.
+
+## No Unnecessary Hashing
+
+Do not add hashes, checksums, fingerprints, digests, content IDs, or similar mechanisms merely to verify that data "has not changed."
+
+A hash or checksum should only be introduced when there is a concrete requirement such as:
+
+* detecting corruption across an untrusted or unreliable boundary
+* implementing a protocol or on-disk format that requires it
+* using content-addressed storage
+* replacing a materially more expensive comparison or lookup
+* satisfying an explicitly stated integrity requirement
+
+The result of computing the hash must affect actual program behavior.
+
+Do not:
+
+* hash data and then store or log the hash without a consumer
+* hash data before and after an operation merely as reassurance
+* maintain fingerprints for objects whose identity or lifetime is already known
+* add checksums to trusted in-memory data structures without an identified corruption model
+* use hashing as a substitute for understanding ownership, lifetime, synchronization, or invariants
+
+If ordinary equality, versioning, ownership, locking, or an existing identifier already solves the problem, use that instead.
+
+## Fix Root Causes, Not Symptoms
+
+When a bug is found, first determine the actual violated invariant or incorrect behavior.
+
+Prefer fixing the root cause.
+
+Do not hide the problem behind:
+
+* extra guards
+* retries
+* sleeps
+* arbitrary timeouts
+* duplicate checks
+* caches
+* shadow state
+* wrapper layers
+* silent fallback behavior
+* broad exception handling
+
+A guard is appropriate when the guarded condition is genuinely possible and the desired behavior is part of the system's requirements.
+
+Do not add a guard merely because a value could theoretically be invalid.
+
+## Assume Documented Invariants
+
+Respect guarantees already established by:
+
+* the language
+* the kernel or platform API
+* trusted internal callers
+* validated configuration
+* existing locking rules
+* ownership rules
+* protocol contracts
+* repository-level assumptions
+
+Do not repeatedly revalidate those guarantees at every layer.
+
+When unsure whether an invariant actually holds, investigate the call path and implementation first rather than immediately adding defensive code.
+
+## Keep Changes Minimal
+
+Implement what is required now.
+
+Do not design infrastructure for hypothetical future requirements unless the user explicitly asks for extensibility.
+
+Prefer:
+
+direct implementation
+over abstraction
+
+existing mechanism
+over parallel mechanism
+
+one authoritative state
+over duplicated state
+
+clear invariant
+over defensive recovery
+
+root-cause fix
+over symptom mitigation
+
+small focused patch
+over generalized framework
+
+Before introducing additional machinery, ask:
+
+1. What concrete failure does this prevent?
+2. Can that failure actually occur in the supported system?
+3. Is handling that failure part of the requirements?
+4. Does existing code already provide the guarantee?
+5. Is there a simpler way to preserve the invariant?
+
+If there is no concrete answer, do not add the machinery.
+
+## Do Not Manufacture Problems
+
+When reviewing code, report actual correctness, performance, concurrency, security, or maintainability problems supported by the code and its operating assumptions.
+
+Do not invent hypothetical edge cases merely to produce findings.
+
+It is valid to conclude that the existing implementation is correct and needs no additional hardening.
+

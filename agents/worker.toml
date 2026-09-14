@@ -6,7 +6,7 @@ Use after the parent agent has established the architecture or implementation pl
 """
 
 model = "gpt-5.6-luna"
-model_reasoning_effort = "high"
+model_reasoning_effort = "max"
 
 sandbox_mode = "workspace-write"
 
